@@ -23,26 +23,17 @@ def genNoise(width: int, height: int, seed: int, detail: int, x_off: int, y_off:
             m[y][x] = noise.pnoise2((x + x_off) / scale, (y + y_off) / scale, detail, 0.6, 4, base = seed)
     return m
 
-def getColor(val: float) -> pygame.Color:
-    if val < 0:
-        return (0, 0, 255)
-    else:
-        if val < 0.16:
-            return (0, 255, 0)
-        else:
-            return (40, 40, 40)
+def inRange(start: float, val: float, end: float) -> bool:
+    return start <= val < end
 
 def getImage(val: float) -> pygame.Surface:
-    if val < 0:
+    if inRange(-1, val, 0):
         return tiles[1]
-    else:
-        if val < 0.12:
-            return tiles[0]
-        else:
-            if val < 0.25:
-                return tiles[3]
-            else:
-                return tiles[2]
+    if inRange(0, val, 0.15):
+        return tiles[0]
+    if inRange(0.15, val, 0.23):
+        return tiles[3]
+    return tiles[2]
 
 def getImageFromNoise(terrain: list[list[float]], width: int, height: int) -> pygame.Surface:
     image = pygame.Surface((width, height))
@@ -52,7 +43,7 @@ def getImageFromNoise(terrain: list[list[float]], width: int, height: int) -> py
             image.blit(tile, (tile.get_width() * x, tile.get_height() * y))
     return image
 
-n = genNoise(20, 20, seed, 5, x, y)
+n = genNoise(20, 20, seed, 8, x, y)
 image = getImageFromNoise(n, 600 + 2 * (4.6 * 16), 600 + 2 * (4.6 * 16))
 pressed = False
 
@@ -81,22 +72,22 @@ while run:
     if w_x > -2.3 * 16:
         w_x = -4.6 * 16
         x -= 1
-        n = genNoise(20, 20, seed, 5, x, y)
+        n = genNoise(20, 20, seed, 8, x, y)
         image = getImageFromNoise(n, 600 + 2 * (4.6 * 16), 600 + 2 * (4.6 * 16))
     if w_x < (-2.3 * 3) * 16:
         w_x = -4.6 * 16
         x += 1
-        n = genNoise(20, 20, seed, 5, x, y)
+        n = genNoise(20, 20, seed, 8, x, y)
         image = getImageFromNoise(n, 600 + 2 * (4.6 * 16), 600 + 2 * (4.6 * 16))
     if w_y > -2.3 * 16:
         w_y = -4.6 * 16
         y -= 1
-        n = genNoise(20, 20, seed, 5, x, y)
+        n = genNoise(20, 20, seed, 8, x, y)
         image = getImageFromNoise(n, 600 + 2 * (4.6 * 16), 600 + 2 * (4.6 * 16))
     if w_y < (-2.3 * 3) * 16:
         w_y = -4.6 * 16
         y += 1
-        n = genNoise(20, 20, seed, 5, x, y)
+        n = genNoise(20, 20, seed, 8, x, y)
         image = getImageFromNoise(n, 600 + 2 * (4.6 * 16), 600 + 2 * (4.6 * 16))
     win.fill((255, 255, 255))
 
