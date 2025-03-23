@@ -1,19 +1,40 @@
 import pygame
 import noise
+import random
 
 pygame.init()
 
+help(noise)
+
+# print(type(noise.pnoise2))
+
 win = pygame.display.set_mode((600, 600))
-
-# so how this is going to work i will divide the surface up into a grid this will be dubbed the in between method
-
-n = noise.Noise(30, 30)
-n.genNoise()
-n.genImg(20)
 
 hit_space = False
 
 x, y = 0, 0
+
+def genNoise(width: int, height: int, seed: int) -> list[list[float]]:
+    m = [[(0) for x in range(width)] for y in range(height)]
+    for x in range(width):
+        for y in range(height):
+            m[y][x] = noise.pnoise2((x + 1) / 200, (y + 1) / 200, 6, 0.6, 4, base = seed)
+    return m
+
+def getImageFromNoise(terrain: list[list[float]], width: int, height: int) -> pygame.Surface:
+    image = pygame.Surface((len(terrain[0]), len(terrain)))
+    for y in range(len(terrain)):
+        for x in range(len(terrain[y])):
+            if terrain[y][x] > 0:
+                val = (0, 255, 0)
+            else:
+                val = (0, 0, 255)
+            image.set_at((x, y), val)
+    image = pygame.transform.scale(image, (width, height))
+    return image
+
+n = genNoise(600, 600, random.randint(0, 100))
+image = getImageFromNoise(n, 600, 600)
 
 time = pygame.time.Clock()
 
@@ -25,8 +46,8 @@ while run:
     
     k = pygame.key.get_pressed()
     if k[pygame.K_SPACE] and not hit_space:
-        n.genNoise()
-        n.genImg(20)
+        n = genNoise(600, 600, random.randint(0, 100))
+        image = getImageFromNoise(n, 600, 600)
         hit_space = True
     if not k[pygame.K_SPACE]:
         hit_space = False
@@ -41,7 +62,7 @@ while run:
         x -= 5
     win.fill((255, 255, 255))
 
-    win.blit(n.img, (x, y))
+    win.blit(image, (x, y))
 
     pygame.display.update()
     time.tick(60)
