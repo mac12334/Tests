@@ -4,8 +4,6 @@ import random
 
 pygame.init()
 
-help(noise)
-
 # print(type(noise.pnoise2))
 
 win = pygame.display.set_mode((600, 600))
